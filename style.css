@@ -1,0 +1,275 @@
+/* styles.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Navbar style */
+nav {
+    background-color: #29498d; /* Biru */
+    padding: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav .logo {
+    font-size: 16px;
+    font-weight: bold;
+    color: #ffffff;
+    padding-left: 20px;
+}
+
+nav .menu {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 20px;
+}
+
+nav .menu li {
+    display: inline;
+}
+
+nav .menu a {
+    text-decoration: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding-right: 100px;
+}
+
+nav .menu a:hover {
+    text-decoration: underline;
+}
+
+/* Footer style */
+footer {
+    background-color: #29498d; /* Biru */
+    color: white;
+    text-align: left;
+    padding: 24px;
+    font-weight: bold;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    padding-left: 50px;
+}
+
+.content {
+    padding-top: 80px; /* Memberi ruang untuk navbar fixed */
+    display: none; /* Konten About disembunyikan pertama kali */
+}
+
+/* Memberikan padding-top pada ID yang dituju */
+.legend-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Menggunakan seluruh tinggi layar */
+}
+
+/* Menambahkan kotak (about-box) untuk konten */
+.legend-box {
+    background-color: #29498d; /* Warna latar belakang kotak */
+    padding: 20px 40px; /* Jarak dalam kotak */
+    border-radius: 10px; /* Sudut kotak yang membulat */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+    width: 70%; /* Lebar kotak relatif */
+    max-width: 1000px; /* Batas maksimum lebar kotak */
+    text-align: center; /* Teks di dalam kotak di tengah */
+}
+
+/* Menambahkan gaya pada judul */
+.legend-box h1 {
+    margin-bottom: 20px; /* Memberikan jarak di bawah judul */
+    color: #ffffff; /* Warna teks judul */
+}
+
+
+/* Menambahkan gaya pada paragraf */
+.legend-box p {
+    color: #ffffff; /* Warna teks konten */
+    line-height: 1.6; /* Menambah jarak antar baris */
+}
+
+.about-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Menggunakan seluruh tinggi layar */
+}
+
+/* Menambahkan kotak (about-box) untuk konten */
+.about-box {
+    background-color: #29498d; /* Warna latar belakang kotak */
+    padding: 20px 40px; /* Jarak dalam kotak */
+    border-radius: 10px; /* Sudut kotak yang membulat */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+    width: 70%; /* Lebar kotak relatif */
+    max-width: 1000px; /* Batas maksimum lebar kotak */
+    text-align: center; /* Teks di dalam kotak di tengah */
+}
+
+/* Menambahkan gaya pada judul */
+.about-box h1 {
+    margin-bottom: 20px; /* Memberikan jarak di bawah judul */
+    color: #ffffff; /* Warna teks judul */
+}
+
+.about-box h4 {
+    margin-bottom: 20px; /* Memberikan jarak di bawah judul */
+    color: #ffffff; /* Warna teks judul */
+}
+
+/* Menambahkan gaya pada paragraf */
+.about-box p {
+    color: #ffffff; /* Warna teks konten */
+    line-height: 1.6; /* Menambah jarak antar baris */
+}
+.about-box li {
+    color: #ffffff; /* Warna teks konten */
+    line-height: 1.6; /* Menambah jarak antar baris */
+}
+
+
+
+.map-legend {
+    width: 100%;
+    height: 100%;
+}
+
+
+
+#chatbot {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed; /* Menempel pada tampilan */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 90vh;
+    background-color: rgba(0, 0, 0, 0.3); /* Latar belakang semi-transparan */
+    display: none; /* Tersembunyi secara default */
+}
+
+/* Mengatur tampilan chatbox */
+.chatbox {
+    width: 70%;
+    max-width: 500px; /* Lebar maksimum */
+    border: 3px solid #29498d;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: whitesmoke;
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+}
+
+/* Output chat */
+#chat-output {
+    height: 300px;
+    overflow-y: auto;
+    border: 2px solid #29498d;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+/* Setiap pesan dalam chat */
+.message.user {
+    align-self: flex-start; /* Pesan pengguna di sebelah kiri */
+    background-color: #29498d;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 100px 100px;
+    max-width: 190%;
+}
+
+/* Style untuk pesan chatbot */
+.message.bot {
+    align-self: flex-end; /* Pesan chatbot di sebelah kanan */
+    background-color: #29498d;
+    padding: 10px;
+    border-radius: 10px;
+    margin: 5px 0;
+    max-width: 100%;
+}
+
+/* Styling untuk input teks */
+input[type="text"] {
+    width: 96.8%;
+    padding: 6px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+
+}
+
+/* Styling untuk button kirim */
+button {
+    padding: 6px;
+    cursor: pointer;
+    background-color: #29498d;
+    color: #ffffff;
+    font-weight: bold;
+   
+}
+
+.close-button {
+    align-self: flex-end; /* Menempatkan tombol di kanan atas chatbox */
+    background-color: #ff4d4d; /* Warna tombol */
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 10px;
+    border-radius: 3px;
+    margin-bottom: 10px;
+}
+
+.close-button:hover {
+    background-color: #ff1a1a; /* Warna ketika tombol di-hover */
+}   
+
+#map {
+    height: 430px;  /* Tinggi peta */
+    width: 100%;    /* Lebar peta */
+}
+#legend-map {
+    height: 80vh; /* Tentukan tinggi peta */
+    width: 100%;  /* Tentukan lebar peta */
+}
+
+.container-legend {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.map-container {
+    width: 60%;
+    height: 500px;  /* Tentukan tinggi peta */
+    background-color: #e0e0e0;  /* Latar belakang sementara untuk peta */
+    border-radius: 8px;  /* Sudut membulat */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); 
+    margin-bottom: 20px;
+    margin-right: 4px; /* Bayangan untuk peta */
+    position: relative; /* Membuat posisi relatif untuk elemen di dalamnya */
+    overflow: hidden; /* Untuk peta */
+}
+
+.info-container {
+    width: 35%; /* Untuk informasi */
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.info-container h2 {
+    margin-top: 0;
+}
+

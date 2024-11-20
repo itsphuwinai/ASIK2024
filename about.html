@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navbar dan Footer</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo">MentawaiMangroveMonitor</div>
+        <ul class="menu">
+            <li><a href="javascript:void(0);" onclick="toggleContent('peta')">Peta</a></li>
+            <li><a href="javascript:void(0);" onclick="toggleContent('about')">About</a></li>
+            <li><a href="javascript:void(0);" onclick="toggleContent('legend')">Legend</a></li>
+            <li><a href="javascript:void(0);" onclick="toggleContent('chatbot')">Chatbot</a></li>
+        </ul>
+    </nav>
+
+    <!-- Peta -->
+    <div id="peta" style="display: none;">
+        <!-- Peta akan ditampilkan di sini -->
+        <div id="map"></div> <!-- Element peta yang sebelumnya hilang -->
+    </div>
+
+    <!-- Konten yang ditampilkan saat menu About, Legend, atau Chatbot diklik -->
+    <div id="about" class="content" style="display: none;">
+        <div class="about-container">
+            <div class="about-box">
+        <h1>Tentang MentawaiMangroveMonitor</h1>
+        <h4>Selamat datang di MentawaiMangroveMonitor – platform terbaik untuk memantau dan melestarikan mangrove di kepulauan indah Mentawai.  </h4>
+        <p>
+            Di Kepulauan Mentawai, mangrove adalah penopang keseimbangan ekologi sekaligus bagian dari warisan budaya. Melindunginya berarti memastikan masa depan yang berkelanjutan bagi pulau-pulau ini dan masyarakatnya.
+
+            <p>
+                <strong>Misi Kami</strong><br>
+                MentawaiMangroveMonitor berkomitmen untuk melindungi salah satu ekosistem paling penting di Bumi: mangrove. Hutan pesisir ini adalah pelindung alami, menjaga garis pantai, mendukung keanekaragaman hayati, dan menyerap karbon untuk melawan perubahan iklim.
+            </p>
+            
+            <p>
+                <strong>Apa yang Kami Tawarkan?</strong><br>
+                <p>MentawaiMangroveMonitor memanfaatkan teknologi canggih untuk menyediakan alat yang mendukung upaya konservasi:
+            </p>
+            
+            <p>
+                <strong>Pemetaan NDVI</strong> <br> Platform kami menggunakan <strong>Normalized Difference Vegetation Index (NDVI)</strong> untuk memantau kesehatan mangrove. NDVI menyoroti perbedaan antara vegetasi yang subur, sedang, dan jarang.
+            </p>
+            
+            <p>
+                <strong>Legenda NDVI: Memahami Vegetasi Mangrove</strong><br>
+                NDVI membantu mengevaluasi kepadatan dan kesehatan vegetasi mangrove. Nilai NDVI berkisar antara <strong>-1.0 hingga 1.0</strong>, yang dibagi menjadi beberapa kelas:
+            </p>
+            
+            <ul>
+                <li><strong>-1.0 ≤ NDVI ≤ 0.33 (Jarang):</strong> Kategori ini menunjukkan vegetasi jarang atau area mangrove yang terdegradasi. Bisa mencakup zona rusak, perairan terbuka, atau tanah kosong dengan sedikit hijauan.</li>
+                <li><strong>0.33 ≤ NDVI ≤ 0.42 (Sedang):</strong> Kepadatan vegetasi sedang berada dalam rentang ini. Mangrove di kategori ini masih sehat namun perlu pengawasan untuk menjaga pertumbuhannya.</li>
+                <li><strong>0.42 ≤ NDVI ≤ 1.00 (Padat):</strong> Ini adalah kategori tertinggi, mewakili hutan mangrove yang subur dan sehat. Area ini sangat penting bagi keanekaragaman hayati dan stabilitas ekosistem.</li>
+            </ul>
+            
+        </div>
+        </div>
+    </div>
+
+
+    <!-- Legend -->
+    <div id="legend" class="content" style="display: none;">
+        <div class="container-legend">
+            <div class="map-container">
+                <div id="legend-map"></div>
+            </div>
+
+            <div class="info-container">
+                <h2>Informasi Pulau</h2>
+                <div id="legend-content">
+                    <p>Pilih sebuah pulau di peta untuk melihat informasinya.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chatbot -->
+    <div id="chatbot">
+        <div class="chatbox">
+            <button onclick="closeChatbot()" class="close-button"> X </button>
+            <div id="chat-output"></div>
+            <input type="text" id="user-input" placeholder="Ketik pertanyaan Anda..." onkeypress="handleKeyPress(event)">
+            <button onclick="sendMessage()"> Send </button>
+        </div>
+    </div>
+
+    <script>
+        function toggleContent(contentId) {
+            // Sembunyikan semua konten
+            document.querySelectorAll('#peta, #about, #legend, #chatbot').forEach(function(content) {
+                content.style.display = 'none';
+            });
+
+            // Tampilkan konten yang dipilih berdasarkan id
+            var selectedContent = document.getElementById(contentId);
+            if (selectedContent) {
+                // Jika yang dibuka adalah chatbot, gunakan 'flex' agar tetap di tengah
+                if (contentId === 'chatbot') {
+                    selectedContent.style.display = 'flex';
+                } else {
+                    selectedContent.style.display = 'block';
+                }
+            }
+        }
+
+        var map, legendMap;
+        var currentPulau = '';
+
+        function initializeMap() {
+            // Inisialisasi peta di halaman Peta
+            map = L.map('map').setView([-0.7893, 113.9213], 5); // Koordinat awal dan zoom level
+
+            // Menambahkan basemap dari OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // Inisialisasi peta di halaman Legend
+            legendMap = L.map('legend-map').setView([-0.7893, 113.9213], 5); // Koordinat awal dan zoom level
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(legendMap);
+
+            // Menambahkan marker untuk pulau-pulau
+            addMarker([-1.5936, 99.2579], "Pulau Siberut",
+             "Pulau Siberut adalah bagian dari Kepulauan Mentawai. <br><strong>Tahun 2020:</strong> Distribusi vegetasi di Siberut berdasarkan klasifikasi NDVI menunjukkan bahwa luas area dengan vegetasi rapat tercatat sekitar 1213,79 ha. Area dengan vegetasi sedang mencakup sekitar 94,36 ha, dan area dengan vegetasi jarang memiliki luas sekitar 171,75 ha. <br><strong>Tahun 2021:</strong> Pada tahun 2021, luas area dengan vegetasi rapat tercatat sekitar 8545,32 ha, vegetasi sedang mencapai sekitar 238,33 ha, dan vegetasi jarang sekitar 218,35 ha. <br><strong>Tahun 2022:</strong> Pada tahun 2022, luas area dengan vegetasi rapat tercatat sekitar 238,33 ha, vegetasi sedang mencakup sekitar 218,35 ha, sementara vegetasi jarang memiliki luas sekitar 8352,28 ha.");
+            addMarker([-2.0819, 99.6041], "Pulau Sipora", "PSipora 2020 Pada tahun 2020, distribusi vegetasi di Sipora berdasarkan klasifikasi NDVI menunjukkan adanya variasi dalam tingkat kerapatan vegetasi. Luas area dengan vegetasi rapat tercatat sekitar 926,81 ha, sementara area dengan vegetasi sedang mencakup 79,07 ha. Sementara itu, area dengan vegetasi jarang memiliki luas sekitar 254,42 ha. Data ini memberikan gambaran tentang kondisi tutupan lahan di Sipora, yang bervariasi dari rapat hingga jarang, berdasarkan pengukuran NDVI. 2021 Pada tahun 2021, distribusi vegetasi di Sipora berdasarkan klasifikasi NDVI menunjukkan hasil yang berbeda. Luas area dengan vegetasi rapat tercatat sekitar 1025,79 ha, sementara area dengan vegetasi sedang mencakup sekitar 38,37 ha. Di sisi lain, luas area dengan vegetasi jarang mencapai sekitar 1260,30 ha. Data ini menggambarkan perubahan dalam kondisi tutupan lahan di Sipora dari tahun 2020 ke 2021, dengan peningkatan pada luas vegetasi rapat dan penurunan pada area dengan vegetasi sedang. 2022 Pada tahun 2022, distribusi vegetasi di Sipora berdasarkan klasifikasi NDVI menunjukkan perubahan yang signifikan. Luas area dengan vegetasi rapat tercatat sekitar 1041,37 ha, sedangkan area dengan vegetasi sedang mencakup sekitar 45,66 ha. Area dengan vegetasi jarang memiliki luas sekitar 173,27 ha. Data ini menunjukkan adanya peningkatan pada luas vegetasi rapat dibandingkan tahun sebelumnya, sementara area dengan vegetasi sedang dan jarang mengalami penurunan.");
+            addMarker([-2.8524, 100.0736], "Pulau Pagai", "Pulau Pagai adalah bagian dari Kepulauan Mentawai. <br><strong>Tahun 2020:</strong> Distribusi vegetasi di Pagai berdasarkan klasifikasi NDVI menunjukkan bahwa luas area dengan vegetasi rapat tercatat sekitar 1302,99 ha. Luas area dengan vegetasi sedang mencapai sekitar 228,92 ha, sementara area dengan vegetasi jarang memiliki luas yang sangat besar, yaitu sekitar 3204,20 ha. Data ini menggambarkan dominasi vegetasi jarang di Pagai pada tahun 2020, dengan area rapat dan sedang memiliki luas yang lebih terbatas. <br><strong>Tahun 2021:</strong> Pada tahun 2021, distribusi vegetasi di Pagai menunjukkan bahwa luas area dengan vegetasi rapat tercatat sekitar 3700,01 ha. Luas area dengan vegetasi sedang mencapai sekitar 129,91 ha, sementara area dengan vegetasi jarang memiliki luas sekitar 906,20 ha. Data ini menunjukkan adanya peningkatan area dengan vegetasi rapat dibandingkan tahun sebelumnya, sementara area dengan vegetasi sedang dan jarang mengalami penurunan luas. <br><strong>Tahun 2022:</strong> Pada tahun 2022, distribusi vegetasi di Pagai menunjukkan bahwa luas area dengan vegetasi rapat tercatat sekitar 4357,72 ha. Luas area dengan vegetasi sedang mencapai sekitar 113,08 ha, sementara area dengan vegetasi jarang memiliki luas sekitar 265,32 ha. Data ini menunjukkan peningkatan luas vegetasi rapat dibandingkan dengan tahun-tahun sebelumnya, sementara area dengan vegetasi sedang dan jarang mengalami penurunan luas.");
+        }
+
+        // Fungsi untuk menambah marker dan memperbarui konten info
+        function addMarker(latlng, title, description) {
+            var marker = L.marker(latlng).addTo(map); // Menambahkan marker ke peta di halaman Peta
+            marker.bindPopup(`<b>${title}</b><br>${description}`).on('click', function() {
+                updateLegend(title, description, latlng);
+            });
+        }
+
+        // Fungsi untuk memperbarui konten Legend dengan informasi pulau dan marker yang dipilih
+        function updateLegend(title, description, latlng) {
+            currentPulau = title;
+            const legendContent = document.getElementById("legend-content");
+            legendContent.innerHTML = `<h2>${title}</h2><p>${description}</p>`;
+
+            // Perbarui peta di halaman Legend sesuai marker yang diklik
+            legendMap.setView(latlng, 10); // Set view untuk menampilkan marker yang dipilih
+            L.marker(latlng).addTo(legendMap).bindPopup(`<b>${title}</b><br>${description}`).openPopup();
+        }
+
+        // Pastikan DOM siap sebelum menjalankan inisialisasi peta
+        document.addEventListener('DOMContentLoaded', initializeMap);
+
+        
+        // Fungsi untuk mengirim pesan chatbot
+        function sendMessage() {
+            var userInput = document.getElementById("user-input").value;
+            addChatMessage("You", userInput);
+            getBotResponse(userInput);
+            document.getElementById("user-input").value = "";
+        }
+
+        // Fungsi untuk menampilkan pesan
+        function addChatMessage(sender, message) {
+            var chatOutput = document.getElementById("chat-output");
+            var newMessage = document.createElement("div");
+            newMessage.className = "message";
+            newMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
+            chatOutput.appendChild(newMessage);
+            chatOutput.scrollTop = chatOutput.scrollHeight;
+        }
+
+        // Fungsi respons chatbot untuk topik mangrove dan terkait
+        function getBotResponse(userInput) {
+            var response;
+            var input = userInput.toLowerCase();
+
+            // Respons chatbot berdasarkan kata kunci
+            if (input.includes("halo") || input.includes("hai")) {
+                response = "Halo! Ada yang bisa saya bantu seputar mangrove atau topik lainnya?";
+            } else if (input.includes("arti mangrove")) {
+                response = "Hutan Mangrove adalah vegetasi hutan yang tumbuh diantara garis pasang surut, namun juga bisa tumbuh pada pantai karang, juga pada dataran koral mati yang di atasnya ditimbuni sebuah lapis tipis pasir, lumpur, maupun pantai berlumpur. Saparinto (2007).";
+            } else if (input.includes("fungsi mangrove")) {
+                response = "Hutan mangrove memiliki banyak fungsi yang penting bagi lingkungan dan masyarakat. Berikut adalah beberapa fungsi hutan mangrove: " +
+    "1. Melindungi garis pantai - Hutan mangrove berfungsi sebagai penghalang alami terhadap badai dan banjir, melindungi garis pantai dari erosi dan membantu mengurangi dampak bencana alam. " +
+    "2. Habitat bagi tumbuhan dan hewan - Hutan mangrove menyediakan habitat bagi berbagai jenis tumbuhan dan hewan, termasuk ikan, burung, dan krustasea. Hutan mangrove juga merupakan tempat yang penting bagi migrasi dan reproduksi hewan. " +
+    "3. Penyimpanan karbon - Hutan mangrove menyerap dan menyimpan banyak karbon dioksida dari atmosfer, sehingga memiliki peran penting dalam penyimpanan karbon global. " +
+    "4. Sumber makanan dan bahan bakar - Hutan mangrove merupakan sumber makanan dan bahan bakar bagi masyarakat setempat, termasuk ikan, kerang, dan kayu bakar. " +
+    "5. Penyerap polutan - Hutan mangrove juga dapat menyerap polutan dari air laut, seperti logam berat dan bahan kimia lainnya, sehingga membantu menjaga kualitas air laut. " +
+    "Penghasilan ekonomi - Hutan mangrove juga dapat menghasilkan pendapatan ekonomi bagi masyarakat setempat, seperti melalui pariwisata, penangkapan ikan, dan pemanfaatan kayu.";
+            } else if (input.includes("arti pemetaan")) {
+                response = "Pemetaan adalah pengelompokkan suatu kumpulan wilayah yang berkaitan dengan beberapa letak geografis wilayah yang meliputi dataran tinggi, pegunungan, sumber daya dan potensi penduduk yang berpengaruh terhadap sosial kultural yang memilki ciri khas khusus dalam penggunaan skala yang tepat (Munir, 2012).";
+            } else if (input.includes("vegetasi")) {
+                response = "Vegetasi adalah kumpulan dari beberapa jenis tumbuh-tumbuhan yang hidup secara bersamasama pada satu tempat dan terjadinya interaksi antar penyusun komponen, baik antara tumbuhtumbuhan maupun hewan-hewan yang hidup di lingkungan tersebut (Ufiza dkk., 2018).";
+            } else if (input.includes("analisis vegetasi")) {
+                response = "Analisis vegetasi merupakan cara untuk mengetahui seberapa besar sebaran berbagai spesies dalam suatu area melalui pengamatan langsung. (Sri Agustina dkk., 2021) ";
+            } else if (input.includes("legend")) {
+                response = "Legenda adalah keterangan yang berupa simbol-simbol pada peta agar peta mudah dimengerti oleh pembaca.";
+            } else if (input.includes("tujuan pemetaan")) {
+                response = "untuk mempelajari struktur dan komposisi tumbuhan sehingga dapat dimanfaatkan dalam rangka konservasi tumbuhan. (Irene Alfania Kawung dkk., 2020)";
+            } else {
+                response = "Maaf, saya tidak mengerti. Coba tanyakan hal yang lainnya.";
+            }
+
+            addChatMessage("Chatbot", response);
+            function addChatMessage(sender, message) {
+    var chatOutput = document.getElementById("chat-output");
+    var newMessage = document.createElement("div");
+
+    // Beri kelas berdasarkan pengirim pesan
+    if (sender === "You") {
+        newMessage.className = "message user"; // Pesan pengguna di sebelah kiri
+    } else {
+        newMessage.className = "message bot"; // Pesan chatbot di sebelah kanan
+    }
+
+    newMessage.innerHTML = `<strong>${sender}:</strong> ${message}`;
+    chatOutput.appendChild(newMessage);
+    chatOutput.scrollTop = chatOutput.scrollHeight;
+}
+        }
+
+        // Fungsi untuk menangani enter pada input
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+
+        function closeChatbot() {
+    document.getElementById("chatbot").style.display = 'none';
+
+     toggleContent('peta'); 
+}
+    </script>
+
+    <!-- Footer -->
+    <footer>
+        MentawaiMangroveMonitor
+    </footer>
+
+</body>
+</html>
